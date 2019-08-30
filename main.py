@@ -4,12 +4,6 @@ import modules.order as order
 import modules.wifi as wifi
 import modules.report as report
 
-# print('sdf',re.match('^[0-9]{3}', 'sdf'))
-# print('a3',re.match('^[0-9]{3}', 'a3'))
-# print('1',re.match('^[0-9]{3}', '1'))
-# print('12',re.match('^[0-9]{3}', '12'))
-# print('12a',re.match('^[0-9]{3}', '12a'))
-
 try:
     while (1):
         print("********************* Menu *******************")

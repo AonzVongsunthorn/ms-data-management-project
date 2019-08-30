@@ -1,6 +1,6 @@
 import re
 import pandas as pd
-filename = "./data/product.txt"
+filename = "./data/products.txt"
 
 def list_menu():
     try:
@@ -30,7 +30,7 @@ def list_menu():
 
 def get_products():
     try:
-        productList = [];
+        productList = []
         with open(filename, "r") as f:
             products = f.readlines()
             for product in products:

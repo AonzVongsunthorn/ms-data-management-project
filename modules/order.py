@@ -1,15 +1,15 @@
 import re
 from .product import show_product,get_product_codes,get_product
 import pandas as pd
+from datetime import date
 
-orderFile = "./data/product.txt"
+orderFile = "./data/orders.txt"
 orderItemsFile = "./data/order_items.txt"
 
-def add_items():
+def add_items(items):
 
     try:
         show_product()
-        items = []
         while (1):
             code = input("Please enter the product code or [x] to exit  => ")
             if (code == 'x'):
@@ -66,9 +66,42 @@ def remove_item(items):
     except Exception as e:
         print("Something wrong on order.py -> remove_item", + str(e))
 
-def save_order():
+def write_data(filename, txt):
     try:
-        print('save_order')
+        with open(filename, 'a', encoding='utf-8') as file:
+            file.write(txt)
+        file.close()
+    except Exception as e:
+        print("Something wrong on product.py -> write_data", + str(e))
+
+def save_order(items):
+    try:
+        if (len(items) == 0):
+            print("No item!")
+            return
+        totalPrice = 0
+        for item in items:
+            product = get_product(item['product'])
+            totalPrice = totalPrice + (int(item['qty']) * int(product['price']))
+
+        with open(orderFile, 'r') as f:
+            lines = f.read().splitlines()
+            if(len(lines) > 0) :
+                lastLine = lines[-1]
+                orderData = lastLine.split(',')
+                nextId = str(int(orderData[0]) + 1)
+            else:
+                nextId = '1'
+
+            today = date.today()
+            orderText = nextId+','+today.strftime("%d/%m/%Y")+','+str(totalPrice)+'\n'
+            write_data(orderFile, orderText)
+
+        for item in items:
+            product = get_product(item['product'])
+            itemText = nextId+','+item['product']+','+item['qty']+','+product['price']+'\n'
+            write_data(orderItemsFile, itemText)
+
     except Exception as e:
         print("Something wrong on order.py -> save_order", + str(e))
 
@@ -111,19 +144,20 @@ def list_menu():
             print("[1]. Add Item")
             print("[2]. Show Items")
             print("[3]. Remove Item")
-            print("[s]. Save")
+            print("[s]. Save & Exit")
             print("[x]. Cancel")
 
             menu = input("Please select menu   => ")
 
             if menu == '1':
-                items = add_items()
+                items = add_items(items)
             elif menu == '2':
                 show_items(items)
             elif menu == '3':
                 items = remove_item(items)
             elif menu == 's':
-                save_order()
+                save_order(items)
+                break
             elif menu == 'x':
                 break
             else:

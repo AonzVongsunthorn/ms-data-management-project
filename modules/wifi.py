@@ -35,8 +35,6 @@ def generate_wifi_key():
     except Exception as e:
         print("Something wrong on product.py -> write_data", + str(e))
 
-
-
 def input_id_card():
     while (1):
         id = input("Enter the Thai ID Card or [x] to exit => ")

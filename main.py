@@ -21,7 +21,7 @@ try:
         elif menu == '3':
             wifi.generate_wifi_key()
         elif menu == '4':
-            report.generate_report()
+            report.list_menu()
         elif menu == 'x':
             break
         else:

@@ -1,2 +1,5 @@
-001,americano,65
-234,mocha,65
+001,americano,65,A
+234,mocha,65,D
+002,Ice-Tea,55,A
+003,Honey-Lemon,60,D
+004,Strong-Coffee,50,A

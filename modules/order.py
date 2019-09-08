@@ -1,5 +1,6 @@
 import re
 from .product import show_product,get_product_codes,get_product
+from .member import get_existing_mobile_number,show_member
 import pandas as pd
 from datetime import date
 
@@ -9,7 +10,7 @@ orderItemsFile = "./data/order_items.txt"
 def add_items(items):
 
     try:
-        show_product()
+        show_product(True)
         while (1):
             code = input("Please enter the product code or [x] to exit  => ")
             if (code == 'x'):
@@ -17,7 +18,7 @@ def add_items(items):
 
             if (code not in get_product_codes()):
                 print('Not found the product code', code)
-                show_product()
+                show_product(True)
                 continue
 
             while (1):
@@ -38,7 +39,7 @@ def add_items(items):
         return items
 
     except Exception as e:
-        print("Something wrong on order.py -> add_items", + str(e))
+        print("Something wrong on order.py -> add_items")
 
 def remove_item(items):
     try:
@@ -64,7 +65,7 @@ def remove_item(items):
                 continue
         return items
     except Exception as e:
-        print("Something wrong on order.py -> remove_item", + str(e))
+        print("Something wrong on order.py -> remove_item")
 
 def write_data(filename, txt):
     try:
@@ -72,9 +73,9 @@ def write_data(filename, txt):
             file.write(txt)
         file.close()
     except Exception as e:
-        print("Something wrong on product.py -> write_data", + str(e))
+        print("Something wrong on product.py -> write_data")
 
-def save_order(items):
+def save_order(items, member):
     try:
         if (len(items) == 0):
             print("No item!")
@@ -94,7 +95,13 @@ def save_order(items):
                 nextId = '1'
 
             today = date.today()
-            orderText = nextId+','+today.strftime("%d/%m/%Y")+','+str(totalPrice)+'\n'
+            if (member != ''):
+                totalDiscount = totalPrice * 0.1
+            else:
+                totalDiscount = 0
+
+            totalPrice = totalPrice - totalDiscount
+            orderText = nextId+','+today.strftime("%d/%m/%Y")+','+str(member)+','+str(totalDiscount)+','+str(totalPrice)+'\n'
             write_data(orderFile, orderText)
 
         for item in items:
@@ -103,9 +110,9 @@ def save_order(items):
             write_data(orderItemsFile, itemText)
 
     except Exception as e:
-        print("Something wrong on order.py -> save_order", + str(e))
+        print("Something wrong on order.py -> save_order")
 
-def show_items(items):
+def show_items(items, member):
 
     if(len(items) == 0):
         print("No item!")
@@ -125,25 +132,70 @@ def show_items(items):
         })
         totalPrice = totalPrice + (int(item['qty']) * int(product['price']))
 
+    if(member != ''):
+        totalDiscount = totalPrice * 0.1
+    else:
+        totalDiscount = 0
+
+    itemList.append({
+        'Product': member,
+        'Price': '-10%',
+        'Qty': '',
+        'Total': totalDiscount
+    })
+
     itemList.append({
         'Product': '',
         'Price': '',
         'Qty': '',
-        'Total': totalPrice,
+        'Total': (totalPrice - totalDiscount),
     })
+
+    indexes.append('Discount')
     indexes.append('Total')
     df = pd.DataFrame(itemList, index=indexes)
     print(df)
+
+def enter_member():
+    while (1):
+
+        mobile_number = input_mobile_number()
+        if(mobile_number == 'x'):
+            break
+
+        if(mobile_number not in get_existing_mobile_number()):
+            print('mobile number not found!!!')
+            show_member(True)
+            continue
+
+        break
+
+    if(mobile_number == 'x'):
+        return ''
+    else:
+        return mobile_number
+
+def input_mobile_number():
+    while (1):
+        mobileNumber = input("Enter the mobile number or [x] to exit => ")
+        if (mobileNumber == 'x'):
+            break
+
+        if (re.match('^[0]{1}[1-9]{1}[0-9]{8}$', mobileNumber)):
+            break
+    return mobileNumber
 
 def list_menu():
 
     try:
         items = []
+        member = ''
         while (1):
             print('********************* Menu New Order *********************')
             print("[1]. Add Item")
             print("[2]. Show Items")
             print("[3]. Remove Item")
+            print("[4]. Add Member")
             print("[s]. Save & Exit")
             print("[x]. Cancel")
 
@@ -152,11 +204,13 @@ def list_menu():
             if menu == '1':
                 items = add_items(items)
             elif menu == '2':
-                show_items(items)
+                show_items(items, member)
             elif menu == '3':
                 items = remove_item(items)
+            elif menu == '4':
+                member = enter_member()
             elif menu == 's':
-                save_order(items)
+                save_order(items, member)
                 break
             elif menu == 'x':
                 break
@@ -164,4 +218,4 @@ def list_menu():
                 print("Incorrect menu.")
 
     except Exception as e:
-        print("Something wrong on order.py -> add_items", + str(e))
+        print("Something wrong on order.py -> add_items")

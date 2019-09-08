@@ -33,7 +33,7 @@ def generate_wifi_key():
         border_msg(" password: "+password+" ")
 
     except Exception as e:
-        print("Something wrong on product.py -> write_data", + str(e))
+        print("Something wrong on product.py -> write_data")
 
 def input_id_card():
     while (1):

@@ -26,9 +26,9 @@ def list_menu():
             else:
                 print("Incorrect menu.")
     except Exception as e:
-        print("Something wrong on product.py -> list_menu", + str(e))
+        print("Something wrong on product.py -> list_menu")
 
-def get_products():
+def get_products(isShowOnlyAvailable = False):
     try:
         productList = []
         with open(filename, "r") as f:
@@ -37,14 +37,20 @@ def get_products():
                 if (product == ''):
                     continue
                 productData = product.strip().split(",")
+
+                if(isShowOnlyAvailable == True) :
+                    if(productData[3] == 'D'):
+                       continue
+
                 productList.append({
                     'code': productData[0],
                     'name': productData[1],
-                    'price': productData[2]
+                    'price': productData[2],
+                    'status': productData[3],
                 })
         return productList
     except Exception as e:
-        print("Something wrong on product.py -> get_products", + str(e))
+        print("Something wrong on product.py -> get_products")
 
 def get_product(code):
     data = {}
@@ -53,7 +59,7 @@ def get_product(code):
             data['code'] = product['code']
             data['name'] = product['name']
             data['price'] = product['price']
-
+            break
     return data
 
 def get_product_codes():
@@ -63,17 +69,18 @@ def get_product_codes():
             codes.append(product['code'])
         return codes
     except Exception as e:
-        print("Something wrong on product.py -> get_product_codes", + str(e))
+        print("Something wrong on product.py -> get_product_codes")
 
-def show_product():
+def show_product(isShowOnlyAvailable = False):
     try:
         productList = []
         indexes = []
-        for product in get_products():
+        for product in get_products(isShowOnlyAvailable):
             indexes.append(product['code'])
             productList.append({
                  'Product': product['name'],
-                 'Price': product['price']
+                 'Price': product['price'],
+                 'Status': product['status'],
             })
 
         df = pd.DataFrame(productList, index=indexes)
@@ -81,7 +88,7 @@ def show_product():
         print("********************* Product *********************")
         print(df)
     except Exception as e:
-                print("Something wrong on product.py -> show_product", + str(e))
+        print("Something wrong on product.py -> show_product")
 
 def write_data(txt):
     try:
@@ -89,21 +96,21 @@ def write_data(txt):
             file.write(txt)
         file.close()
     except Exception as e:
-        print("Something wrong on product.py -> write_data", + str(e))
+        print("Something wrong on product.py -> write_data")
 
 def re_write_products(products):
     open(filename, "w").close()
     for product in products:
-        write_data(product['code'] + "," + product['product'] + "," + product['price'] + "\n")
+        write_data(product['code'] + "," + product['product'] + "," + product['price']+ "," + product['status'] + "\n")
 
 def add_product():
     try:
         code = input_code()
         name = input_name()
         price = input_price()
-        write_data(code + "," + name + "," + price + "\n")
+        write_data(code + "," + name + "," + price + ",A\n")
     except Exception as e:
-        print("Something wrong on product.py -> add_product", + str(e))
+        print("Something wrong on product.py -> add_product")
 
 def edit_product():
 
@@ -129,18 +136,20 @@ def edit_product():
                     products.append({
                         'code': code,
                         'product': name,
-                        'price': price
+                        'price': price,
+                        'status':product['status']
                     })
                 else :
                     products.append({
                         'code': product['code'],
                         'product': product['name'],
-                        'price': product['price']
+                        'price': product['price'],
+                        'status': product['status']
                     })
             re_write_products(products)
 
     except Exception as e:
-        print("Something wrong on product.py -> edit_product", + str(e))
+        print("Something wrong on product.py -> edit_product")
 
 
 def delete_product():
@@ -163,12 +172,20 @@ def delete_product():
                     products.append({
                         'code': product['code'],
                         'product': product['name'],
-                        'price': product['price']
+                        'price': product['price'],
+                        'status': product['status'],
+                    })
+                else:
+                    products.append({
+                        'code': product['code'],
+                        'product': product['name'],
+                        'price': product['price'],
+                        'status': 'D',
                     })
 
             re_write_products(products)
     except Exception as e:
-        print("Something wrong on product.py -> delete_product", + str(e))
+        print("Something wrong on product.py -> delete_product")
 
 def input_code():
 

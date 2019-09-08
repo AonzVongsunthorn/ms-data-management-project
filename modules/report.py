@@ -28,7 +28,7 @@ def generate_product_report():
             print(df)
 
     except Exception as e:
-        print("Something wrong on report.py -> generate_product_report", + str(e))
+        print("Something wrong on report.py -> generate_product_report")
 
 
 def generate_order_report():
@@ -45,7 +45,7 @@ def generate_order_report():
                 indexes.append(orderData[0])
                 orderList.append({
                     'Date': orderData[1],
-                    'Total(฿)': int(orderData[2]),
+                    'Total(฿)': float(orderData[4]),
                 })
 
             df = pd.DataFrame(orderList, index=indexes)
@@ -54,7 +54,7 @@ def generate_order_report():
             print(df)
 
     except Exception as e:
-        print("Something wrong on report.py -> generate_order_report", + str(e))
+        print("Something wrong on report.py -> generate_order_report")
 
 
 def list_menu():
@@ -77,4 +77,4 @@ def list_menu():
                 print("Incorrect menu.")
 
     except Exception as e:
-        print("Something wrong on report.py -> list_menu", + str(e))
+        print("Something wrong on report.py -> list_menu")
